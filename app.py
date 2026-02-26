@@ -6,6 +6,7 @@ Uses yt-dlp for download and trim in one command.
 import json
 import os
 import queue
+import sys
 import re
 import subprocess
 import tempfile
@@ -68,7 +69,7 @@ def fetch_video_info(url: str) -> tuple[str | None, str | None, int | None]:
     if not video_id:
         return None, None, None
     try:
-        cmd = ["yt-dlp", "--force-ipv4", "--dump-json", "--no-download", url]
+        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4", "--dump-json", "--no-download", url]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=15, env=_get_subprocess_env())
         if result.returncode != 0:
             return None, None, None
@@ -99,7 +100,7 @@ def download_with_ytdlp(
     end_str = format_ytdlp_time(end_sec)
     section = f"*{start_str}-{end_str}"
     cmd = [
-        "yt-dlp",
+        sys.executable, "-m", "yt_dlp",
         "--force-ipv4",
         "-f", fmt,
         "--download-sections", section,
