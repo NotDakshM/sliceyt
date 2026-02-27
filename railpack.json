@@ -1,8 +1,8 @@
 {
   "packages": {
-    "ffmpeg": "latest",
     "deno": "latest"
   },
+  "aptPackages": ["ffmpeg"],
   "install": {
     "commands": ["pip install yt-dlp gunicorn flask"]
   }
