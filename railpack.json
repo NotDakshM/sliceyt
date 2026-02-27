@@ -1,9 +1,11 @@
 {
   "packages": {
-    "deno": "latest",
-    "ffmpeg": "7.1"
+    "deno": "latest"
   },
   "install": {
-    "commands": ["/app/.venv/bin/pip install yt-dlp gunicorn flask"]
+    "commands": [
+      "apt-get update && apt-get install -y ffmpeg",
+      "/app/.venv/bin/pip install yt-dlp gunicorn flask"
+    ]
   }
 }
