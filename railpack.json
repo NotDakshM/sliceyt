@@ -4,6 +4,6 @@
   },
   "aptPackages": ["ffmpeg"],
   "install": {
-    "commands": ["pip install yt-dlp gunicorn flask"]
+    "commands": ["/app/.venv/bin/pip install yt-dlp gunicorn flask"]
   }
 }
