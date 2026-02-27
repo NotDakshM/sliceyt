@@ -70,7 +70,7 @@ def fetch_video_info(url: str) -> tuple[str | None, str | None, int | None]:
         return None, None, None
     try:
         cookies_args = ["--cookies", "/tmp/cookies.txt"] if os.path.exists("/tmp/cookies.txt") else []
-        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4"] + cookies_args + ["--extractor-args", "youtube:player_client=web", "--dump-json", "--no-download", url]
+        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4"] + cookies_args + ["--extractor-args", "youtube:player_client=android", "--dump-json", "--no-download", url]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=15, env=_get_subprocess_env())
         if result.returncode != 0:
             return None, None, None
@@ -90,11 +90,11 @@ def download_with_ytdlp(
 ) -> bool:
     duration_sec = max(end_sec - start_sec, 1)
     format_map = {
-        "2160p": "bestvideo[height<=2160][vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=2160][ext=mp4]+bestaudio[ext=m4a]/best[height<=2160]",
-        "1080p": "bestvideo[height<=1080][vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080]",
-        "720p":  "bestvideo[height<=720][vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]",
-        "480p":  "bestvideo[height<=480][vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]",
-        "360p":  "bestvideo[height<=360][vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360]",
+        "2160p": "bestvideo[height<=2160]+bestaudio/best[height<=2160]",
+        "1080p": "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+        "720p":  "bestvideo[height<=720]+bestaudio/best[height<=720]",
+        "480p":  "bestvideo[height<=480]+bestaudio/best[height<=480]",
+        "360p":  "bestvideo[height<=360]+bestaudio/best[height<=360]",
     }
     fmt = format_map.get(quality, "best")
     start_str = format_ytdlp_time(start_sec)
@@ -105,7 +105,7 @@ def download_with_ytdlp(
         sys.executable, "-m", "yt_dlp",
         "--force-ipv4",
         *cookies_args,
-        "--extractor-args", "youtube:player_client=web",
+        "--extractor-args", "youtube:player_client=android",
         "-f", fmt,
         "--download-sections", section,
         "--merge-output-format", "mp4",
