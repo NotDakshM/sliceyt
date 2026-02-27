@@ -1,5 +1,0 @@
-[phases.setup]
-nixPkgs = ["ffmpeg", "deno"]
-
-[phases.install]
-cmds = ["pip install yt-dlp gunicorn flask"]

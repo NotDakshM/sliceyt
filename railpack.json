@@ -1,0 +1,6 @@
+{
+  "packages": ["ffmpeg", "deno"],
+  "install": {
+    "commands": ["pip install yt-dlp gunicorn flask"]
+  }
+}
