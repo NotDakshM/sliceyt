@@ -69,7 +69,8 @@ def fetch_video_info(url: str) -> tuple[str | None, str | None, int | None]:
     if not video_id:
         return None, None, None
     try:
-        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4", "--dump-json", "--no-download", url]
+        cookies_args = ["--cookies", "/tmp/cookies.txt"] if os.path.exists("/tmp/cookies.txt") else []
+        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4"] + cookies_args + ["--dump-json", "--no-download", url]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=15, env=_get_subprocess_env())
         if result.returncode != 0:
             return None, None, None
@@ -99,9 +100,11 @@ def download_with_ytdlp(
     start_str = format_ytdlp_time(start_sec)
     end_str = format_ytdlp_time(end_sec)
     section = f"*{start_str}-{end_str}"
+    cookies_args = ["--cookies", "/tmp/cookies.txt"] if os.path.exists("/tmp/cookies.txt") else []
     cmd = [
         sys.executable, "-m", "yt_dlp",
         "--force-ipv4",
+        *cookies_args,
         "-f", fmt,
         "--download-sections", section,
         "--merge-output-format", "mp4",
@@ -158,6 +161,12 @@ def download_with_ytdlp(
 # ── Flask app ──────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
+
+# Write cookies from environment variable if provided (Railway deployment)
+_cookies_content = os.environ.get("COOKIES_CONTENT")
+if _cookies_content:
+    with open("/tmp/cookies.txt", "w") as _f:
+        _f.write(_cookies_content)
 
 # job_id → {"status": "pending"|"done"|"error", "file": path, "msg": str, "queue": Queue}
 _jobs: dict[str, dict] = {}
