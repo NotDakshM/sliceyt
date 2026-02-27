@@ -47,8 +47,9 @@ def format_ytdlp_time(seconds: int) -> str:
 
 
 def _get_subprocess_env():
-    """Return env with yt-dlp/FFmpeg on PATH. On Windows, prepend known install locations; on Linux, system PATH is used as-is."""
+    """Return env with yt-dlp/FFmpeg on PATH. On Windows, prepend known install locations; on Linux, also add deno if found."""
     import platform
+    import shutil
     env = os.environ.copy()
     if platform.system() == "Windows":
         env["PATH"] = (
@@ -56,6 +57,11 @@ def _get_subprocess_env():
             + "C:\\Users\\Admin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.0.1-full_build\\bin;"
             + env.get("PATH", "")
         )
+    else:
+        deno_path = shutil.which("deno")
+        if deno_path:
+            import os as _os
+            env["PATH"] = _os.path.dirname(deno_path) + ":" + env.get("PATH", "")
     return env
 
 
@@ -70,7 +76,7 @@ def fetch_video_info(url: str) -> tuple[str | None, str | None, int | None]:
         return None, None, None
     try:
         cookies_args = ["--cookies", "/tmp/cookies.txt"] if os.path.exists("/tmp/cookies.txt") else []
-        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4"] + cookies_args + ["--extractor-args", "youtube:player_client=tv_embedded", "--dump-json", "--no-download", url]
+        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4"] + cookies_args + ["--no-check-extensions-conformance", "--dump-json", "--no-download", url]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=15, env=_get_subprocess_env())
         if result.returncode != 0:
             return None, None, None
@@ -105,7 +111,7 @@ def download_with_ytdlp(
         sys.executable, "-m", "yt_dlp",
         "--force-ipv4",
         *cookies_args,
-        "--extractor-args", "youtube:player_client=tv_embedded",
+        "--no-check-extensions-conformance",
         "-f", fmt,
         "--download-sections", section,
         "--merge-output-format", "mp4",
@@ -168,6 +174,10 @@ _cookies_content = os.environ.get("COOKIES_CONTENT")
 if _cookies_content:
     with open("/tmp/cookies.txt", "w") as _f:
         _f.write(_cookies_content)
+
+import shutil
+deno_path = shutil.which("deno")
+print(f"DEBUG: deno path = {deno_path}")
 
 # job_id → {"status": "pending"|"done"|"error", "file": path, "msg": str, "queue": Queue}
 _jobs: dict[str, dict] = {}
