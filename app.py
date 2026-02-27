@@ -70,7 +70,7 @@ def fetch_video_info(url: str) -> tuple[str | None, str | None, int | None]:
         return None, None, None
     try:
         cookies_args = ["--cookies", "/tmp/cookies.txt"] if os.path.exists("/tmp/cookies.txt") else []
-        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4"] + cookies_args + ["--extractor-args", "youtube:player_client=android", "--dump-json", "--no-download", url]
+        cmd = [sys.executable, "-m", "yt_dlp", "--force-ipv4"] + cookies_args + ["--extractor-args", "youtube:player_client=tv_embedded", "--dump-json", "--no-download", url]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=15, env=_get_subprocess_env())
         if result.returncode != 0:
             return None, None, None
@@ -105,7 +105,7 @@ def download_with_ytdlp(
         sys.executable, "-m", "yt_dlp",
         "--force-ipv4",
         *cookies_args,
-        "--extractor-args", "youtube:player_client=android",
+        "--extractor-args", "youtube:player_client=tv_embedded",
         "-f", fmt,
         "--download-sections", section,
         "--merge-output-format", "mp4",
