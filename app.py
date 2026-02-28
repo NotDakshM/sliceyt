@@ -844,7 +844,7 @@ def _build_html() -> str:
     <div class="premium-header">
       <div class="premium-crown">&#128081;</div>
       <h2 class="premium-title">SliceYT Premium</h2>
-      <p class="premium-sub">Download longer clips in higher quality</p>
+      <p class="premium-sub" id="premium-sub">Download longer clips in higher quality</p>
     </div>
     <div class="premium-cards">
       <div class="price-card price-free">
@@ -1052,7 +1052,8 @@ function selectTab(el) {
   el.classList.add('active');
 }
 
-function openPremiumModal() {
+function openPremiumModal(msg) {
+  document.getElementById('premium-sub').textContent = msg || 'Download longer clips in higher quality';
   document.getElementById('premium-overlay').hidden = false;
 }
 function closePremiumModal() {
@@ -1075,6 +1076,12 @@ function startDownload() {
   var start = parseInt(document.getElementById('start-slider').value) || 0;
   var end   = parseInt(document.getElementById('end-slider').value)   || 0;
   if (end <= start) { showStatusCard(); setStatus('End time must be after start time.', 'err'); return; }
+  var clipDuration = end - start;
+  if (clipDuration > 120) {
+    var mins = (clipDuration / 60).toFixed(1);
+    openPremiumModal('Your clip is ' + mins + ' minutes long. Free plan is limited to 2 minutes. Upgrade to Premium for clips up to 30 minutes.');
+    return;
+  }
   var quality = (document.querySelector('.tab.active') || {}).dataset.q || '1080p';
 
   document.getElementById('dl-btn').disabled = true;
