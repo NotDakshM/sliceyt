@@ -650,22 +650,20 @@ def _build_html() -> str:
     .price-features { list-style: none; padding: 0; margin: 16px 0 0; }
     .price-features li { color: #999; font-size: 12px; padding: 4px 0 4px 18px; position: relative; }
     .price-features li::before { content: '\2713'; position: absolute; left: 0; color: #c9981a; font-size: 11px; }
-    .premium-notify { display: flex; gap: 10px; margin-bottom: 16px; }
-    .premium-notify input {
-      flex: 1; background: #080808; border: 1px solid #222;
-      border-radius: 10px; color: #fff; font-size: 14px;
-      padding: 12px 16px; outline: none; transition: border-color 0.15s;
-      font-family: inherit;
-    }
-    .premium-notify input:focus { border-color: #c9981a; }
-    .premium-notify input::placeholder { color: #3a3a3a; }
-    #notify-btn {
-      background: #c9981a; color: #000; border: none;
-      border-radius: 10px; font-size: 14px; font-weight: 900;
-      padding: 12px 24px; cursor: pointer;
-      transition: background 0.15s; white-space: nowrap; font-family: inherit;
-    }
-    #notify-btn:hover { background: #dda820; }
+    .price-plan-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 10px; }
+    .price-featured .price-plan-label { color: #c9981a; }
+    .price-free { border-color: #1e1e1e !important; background: #0c0c0c; }
+    .price-free .price-amount { color: #555 !important; }
+    .price-free .price-features li::before { color: #3a3a3a; }
+    .price-free .price-features li { color: #555; }
+    .price-current-badge { display: block; background: #111; color: #4a4a4a; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 6px 14px; border-radius: 7px; margin-top: 20px; text-transform: uppercase; border: 1px solid #222; text-align: center; }
+    .price-popular-label { position: absolute; top: -1px; right: -1px; background: #c9981a; color: #000; font-size: 9px; font-weight: 900; letter-spacing: 1px; padding: 4px 10px; border-radius: 0 16px 0 10px; text-transform: uppercase; }
+    .price-notify-inline { margin-top: 16px; display: flex; flex-direction: column; gap: 7px; }
+    .notify-email-input { background: #0a0a08; border: 1px solid #252010; border-radius: 8px; color: #ccc; font-size: 12px; padding: 9px 12px; outline: none; transition: border-color 0.15s; font-family: inherit; width: 100%; box-sizing: border-box; }
+    .notify-email-input:focus { border-color: #c9981a; }
+    .notify-email-input::placeholder { color: #2e2e2e; }
+    .notify-btn-inline { background: #c9981a; color: #000; border: none; border-radius: 8px; font-size: 12px; font-weight: 900; padding: 9px; cursor: pointer; transition: background 0.15s; font-family: inherit; width: 100%; }
+    .notify-btn-inline:hover { background: #dda820; }
     .premium-free-note { text-align: center; color: #3a3a3a; font-size: 12px; margin: 0; }
     @media (max-width: 600px) { .premium-cards { grid-template-columns: 1fr; } }
 
@@ -849,45 +847,50 @@ def _build_html() -> str:
       <p class="premium-sub">Download longer clips in higher quality</p>
     </div>
     <div class="premium-cards">
-      <div class="price-card">
-        <div class="coming-soon-badge">Coming Soon</div>
-        <div class="price-period">Monthly</div>
-        <div class="price-amount">$3.99<span>/month</span></div>
+      <div class="price-card price-free">
+        <div class="price-plan-label">Free</div>
+        <div class="price-amount">$0</div>
         <ul class="price-features">
-          <li>Unlimited clip length</li>
-          <li>4K &amp; 1080p quality</li>
-          <li>Faster downloads</li>
-          <li>No restrictions</li>
+          <li>Clips up to 2 minutes long</li>
+          <li>720p max quality</li>
+          <li>Unlimited number of clips</li>
+          <li>No account needed</li>
         </ul>
+        <div class="price-current-badge">Current Plan</div>
       </div>
       <div class="price-card price-featured">
+        <div class="price-popular-label">Most Popular</div>
         <div class="coming-soon-badge">Coming Soon</div>
-        <div class="price-period">6 Months</div>
-        <div class="price-amount">$2.49<span>/month</span></div>
-        <div class="price-billed">billed $14.99</div>
+        <div class="price-plan-label">Premium</div>
+        <div class="price-amount">$3.99<span>/month</span></div>
         <ul class="price-features">
-          <li>Unlimited clip length</li>
-          <li>4K &amp; 1080p quality</li>
-          <li>Faster downloads</li>
-          <li>No restrictions</li>
+          <li>Clips up to 30 minutes long</li>
+          <li>1080p max quality</li>
+          <li>Unlimited number of clips</li>
+          <li>Priority processing</li>
         </ul>
+        <div class="price-notify-inline">
+          <input type="email" class="notify-email-input" placeholder="your@email.com">
+          <button class="notify-btn-inline" onclick="notifyCard(this)">Notify Me</button>
+        </div>
       </div>
       <div class="price-card">
         <div class="coming-soon-badge">Coming Soon</div>
-        <div class="price-period">12 Months</div>
+        <div class="price-plan-label">Premium Annual</div>
         <div class="price-amount">$1.66<span>/month</span></div>
-        <div class="price-billed">billed $19.99</div>
+        <div class="price-billed">billed $19.99/year</div>
         <ul class="price-features">
-          <li>Unlimited clip length</li>
-          <li>4K &amp; 1080p quality</li>
-          <li>Faster downloads</li>
-          <li>No restrictions</li>
+          <li>Clips up to 2 hours long</li>
+          <li>4K + 1080p quality</li>
+          <li>Unlimited number of clips</li>
+          <li>Priority processing</li>
+          <li>Early access to new features</li>
         </ul>
+        <div class="price-notify-inline">
+          <input type="email" class="notify-email-input" placeholder="your@email.com">
+          <button class="notify-btn-inline" onclick="notifyCard(this)">Notify Me</button>
+        </div>
       </div>
-    </div>
-    <div class="premium-notify">
-      <input type="email" id="notify-email" placeholder="Get notified when premium launches">
-      <button id="notify-btn" onclick="notifyMe()">Notify Me</button>
     </div>
     <p class="premium-free-note">Or continue free &mdash; clips limited to 2 minutes at 720p max</p>
   </div>
@@ -1055,12 +1058,11 @@ function openPremiumModal() {
 function closePremiumModal() {
   document.getElementById('premium-overlay').hidden = true;
 }
-function notifyMe() {
-  var email = document.getElementById('notify-email').value.trim();
-  if (!email) return;
-  var btn = document.getElementById('notify-btn');
+function notifyCard(btn) {
+  var input = btn.parentElement.querySelector('.notify-email-input');
+  if (!input.value.trim()) return;
   btn.textContent = 'Noted!';
-  document.getElementById('notify-email').value = '';
+  input.value = '';
   setTimeout(function() { btn.textContent = 'Notify Me'; }, 2500);
 }
 document.getElementById('premium-overlay').addEventListener('click', function(e) {
