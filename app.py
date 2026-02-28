@@ -596,6 +596,78 @@ def _build_html() -> str:
     }
     .tab:hover { border-color: #444; color: #aaa; }
     .tab.active { background: var(--red); border-color: var(--red); color: #fff; }
+    .tab-premium { color: #6a6040 !important; border-color: #2a2410 !important; background: #131108 !important; }
+    .tab-premium:hover { border-color: #c9981a !important; color: #c9981a !important; }
+
+    /* ── Premium modal ── */
+    #premium-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: overlayIn 0.22s ease;
+    }
+    #premium-card {
+      background: #0e0e0c;
+      border: 1px solid #2e2810;
+      border-radius: 22px;
+      padding: 40px 36px 32px;
+      max-width: 760px; width: 100%;
+      position: relative;
+      animation: cardIn 0.3s cubic-bezier(0.34,1.5,0.64,1);
+      box-shadow: 0 0 80px rgba(212,158,20,0.07), 0 32px 64px rgba(0,0,0,0.7);
+    }
+    #premium-close {
+      position: absolute; top: 18px; right: 22px;
+      background: none; border: none; color: #555;
+      font-size: 26px; cursor: pointer; line-height: 1; transition: color 0.15s;
+    }
+    #premium-close:hover { color: #bbb; }
+    .premium-header { text-align: center; margin-bottom: 30px; }
+    .premium-crown { font-size: 38px; margin-bottom: 10px; line-height: 1; }
+    .premium-title { font-size: 26px; font-weight: 900; color: #fff; margin: 0 0 6px; letter-spacing: -0.5px; }
+    .premium-sub { color: #666; font-size: 14px; margin: 0; }
+    .premium-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+    .price-card {
+      background: #141410; border: 1px solid #262210;
+      border-radius: 16px; padding: 22px 18px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .price-card:hover { border-color: #c9981a; transform: translateY(-3px); box-shadow: 0 12px 32px rgba(201,152,26,0.1); }
+    .price-featured { border-color: #c9981a; background: #131108; box-shadow: 0 0 24px rgba(201,152,26,0.08); }
+    .coming-soon-badge {
+      display: inline-block; background: #e06800; color: #fff;
+      font-size: 9px; font-weight: 900; letter-spacing: 1.5px;
+      padding: 3px 9px; border-radius: 5px; margin-bottom: 14px; text-transform: uppercase;
+    }
+    .price-period { color: #777; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+    .price-amount { color: #c9981a; font-size: 28px; font-weight: 900; margin-bottom: 2px; line-height: 1; }
+    .price-amount span { font-size: 12px; color: #666; font-weight: 400; }
+    .price-billed { color: #555; font-size: 11px; margin: 4px 0 0; }
+    .price-features { list-style: none; padding: 0; margin: 16px 0 0; }
+    .price-features li { color: #999; font-size: 12px; padding: 4px 0 4px 18px; position: relative; }
+    .price-features li::before { content: '\2713'; position: absolute; left: 0; color: #c9981a; font-size: 11px; }
+    .premium-notify { display: flex; gap: 10px; margin-bottom: 16px; }
+    .premium-notify input {
+      flex: 1; background: #080808; border: 1px solid #222;
+      border-radius: 10px; color: #fff; font-size: 14px;
+      padding: 12px 16px; outline: none; transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    .premium-notify input:focus { border-color: #c9981a; }
+    .premium-notify input::placeholder { color: #3a3a3a; }
+    #notify-btn {
+      background: #c9981a; color: #000; border: none;
+      border-radius: 10px; font-size: 14px; font-weight: 900;
+      padding: 12px 24px; cursor: pointer;
+      transition: background 0.15s; white-space: nowrap; font-family: inherit;
+    }
+    #notify-btn:hover { background: #dda820; }
+    .premium-free-note { text-align: center; color: #3a3a3a; font-size: 12px; margin: 0; }
+    @media (max-width: 600px) { .premium-cards { grid-template-columns: 1fr; } }
 
     /* ── Download button ── */
     #dl-btn {
@@ -741,7 +813,7 @@ def _build_html() -> str:
         <div class="section">
           <div class="sec-label">Quality</div>
           <div class="quality-tabs">
-            <button class="tab" data-q="2160p" onclick="selectTab(this)">4K</button>
+            <button class="tab tab-premium" data-q="2160p" onclick="openPremiumModal()">&#128081; 4K</button>
             <button class="tab active" data-q="1080p" onclick="selectTab(this)">1080p</button>
             <button class="tab" data-q="720p" onclick="selectTab(this)">720p</button>
             <button class="tab" data-q="480p" onclick="selectTab(this)">480p</button>
@@ -767,6 +839,60 @@ def _build_html() -> str:
   </div>
 </div>
 
+<!-- ── Premium modal ── -->
+<div id="premium-overlay" hidden>
+  <div id="premium-card">
+    <button id="premium-close" onclick="closePremiumModal()" title="Close">&times;</button>
+    <div class="premium-header">
+      <div class="premium-crown">&#128081;</div>
+      <h2 class="premium-title">SliceYT Premium</h2>
+      <p class="premium-sub">Download longer clips in higher quality</p>
+    </div>
+    <div class="premium-cards">
+      <div class="price-card">
+        <div class="coming-soon-badge">Coming Soon</div>
+        <div class="price-period">Monthly</div>
+        <div class="price-amount">$3.99<span>/month</span></div>
+        <ul class="price-features">
+          <li>Unlimited clip length</li>
+          <li>4K &amp; 1080p quality</li>
+          <li>Faster downloads</li>
+          <li>No restrictions</li>
+        </ul>
+      </div>
+      <div class="price-card price-featured">
+        <div class="coming-soon-badge">Coming Soon</div>
+        <div class="price-period">6 Months</div>
+        <div class="price-amount">$2.49<span>/month</span></div>
+        <div class="price-billed">billed $14.99</div>
+        <ul class="price-features">
+          <li>Unlimited clip length</li>
+          <li>4K &amp; 1080p quality</li>
+          <li>Faster downloads</li>
+          <li>No restrictions</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="coming-soon-badge">Coming Soon</div>
+        <div class="price-period">12 Months</div>
+        <div class="price-amount">$1.66<span>/month</span></div>
+        <div class="price-billed">billed $19.99</div>
+        <ul class="price-features">
+          <li>Unlimited clip length</li>
+          <li>4K &amp; 1080p quality</li>
+          <li>Faster downloads</li>
+          <li>No restrictions</li>
+        </ul>
+      </div>
+    </div>
+    <div class="premium-notify">
+      <input type="email" id="notify-email" placeholder="Get notified when premium launches">
+      <button id="notify-btn" onclick="notifyMe()">Notify Me</button>
+    </div>
+    <p class="premium-free-note">Or continue free &mdash; clips limited to 2 minutes at 720p max</p>
+  </div>
+</div>
+
 <script>
 var videoDuration = 0;
 
@@ -782,7 +908,10 @@ document.getElementById('modal-overlay').addEventListener('click', function(e) {
 
 // Close on Escape
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && !document.getElementById('modal-overlay').hidden) closeModal();
+  if (e.key === 'Escape') {
+    if (!document.getElementById('premium-overlay').hidden) closePremiumModal();
+    else if (!document.getElementById('modal-overlay').hidden) closeModal();
+  }
 });
 
 function setUrlErr(msg) {
@@ -916,9 +1045,27 @@ function updateZIndex() {
 }
 
 function selectTab(el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab:not(.tab-premium)').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
 }
+
+function openPremiumModal() {
+  document.getElementById('premium-overlay').hidden = false;
+}
+function closePremiumModal() {
+  document.getElementById('premium-overlay').hidden = true;
+}
+function notifyMe() {
+  var email = document.getElementById('notify-email').value.trim();
+  if (!email) return;
+  var btn = document.getElementById('notify-btn');
+  btn.textContent = 'Noted!';
+  document.getElementById('notify-email').value = '';
+  setTimeout(function() { btn.textContent = 'Notify Me'; }, 2500);
+}
+document.getElementById('premium-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closePremiumModal();
+});
 
 function startDownload() {
   var url = document.getElementById('url').value.trim();
@@ -969,6 +1116,7 @@ function listenProgress(jobId) {
       } else {
         hide('progress-area');
         setStatus(d.msg, 'err');
+        openPremiumModal();
       }
     }
   };
@@ -976,6 +1124,7 @@ function listenProgress(jobId) {
     evtSrc.close();
     setStatus('Connection error.', 'err');
     resetUI();
+    openPremiumModal();
   };
 }
 
