@@ -117,8 +117,6 @@ def download_with_ytdlp(
         "--download-sections", section,
         "--merge-output-format", "mp4",
         "-o", out_path,
-        "--compat-options", "no-direct-merge",
-        "--postprocessor-args", "merger+ffmpeg:-c:v libx264 -c:a aac -preset fast -crf 23 -avoid_negative_ts make_zero -fflags +genpts -movflags +faststart",
         "--retries", "10",
         "--fragment-retries", "10",
         "--newline",
@@ -160,6 +158,24 @@ def download_with_ytdlp(
     proc.wait()
     reader.join(timeout=1.0)
     stdout_drain.join(timeout=1.0)
+
+    if proc.returncode == 0 and os.path.exists(out_path):
+        fixed_path = out_path.replace('.mp4', '_fixed.mp4')
+        ffmpeg_cmd = [
+            'ffmpeg', '-y',
+            '-i', out_path,
+            '-c:v', 'libx264',
+            '-c:a', 'aac',
+            '-preset', 'fast',
+            '-crf', '23',
+            '-avoid_negative_ts', 'make_zero',
+            '-fflags', '+genpts',
+            '-movflags', '+faststart',
+            fixed_path
+        ]
+        result = subprocess.run(ffmpeg_cmd, capture_output=True)
+        if result.returncode == 0:
+            os.replace(fixed_path, out_path)
 
     if progress_callback:
         progress_callback(1.0, "Complete")
