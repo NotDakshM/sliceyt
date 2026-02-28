@@ -118,7 +118,7 @@ def download_with_ytdlp(
         "--merge-output-format", "mp4",
         "-o", out_path,
         "--compat-options", "no-direct-merge",
-        "--postprocessor-args", "ffmpeg:-avoid_negative_ts make_zero",
+        "--postprocessor-args", "ffmpeg:-c:v libx264 -c:a aac -preset fast -crf 23 -movflags +faststart -avoid_negative_ts make_zero -fflags +genpts",
         "--retries", "10",
         "--fragment-retries", "10",
         "--newline",
