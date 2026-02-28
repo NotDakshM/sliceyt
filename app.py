@@ -96,11 +96,11 @@ def download_with_ytdlp(
 ) -> bool:
     duration_sec = max(end_sec - start_sec, 1)
     format_map = {
-        "2160p": "bestvideo[height<=2160]+bestaudio/best[height<=2160]",
-        "1080p": "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
-        "720p":  "bestvideo[height<=720]+bestaudio/best[height<=720]",
-        "480p":  "bestvideo[height<=480]+bestaudio/best[height<=480]",
-        "360p":  "bestvideo[height<=360]+bestaudio/best[height<=360]",
+        "2160p": "bestvideo[height<=2160][vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[height<=2160]+bestaudio/best[height<=2160]",
+        "1080p": "bestvideo[height<=1080][vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+        "720p":  "bestvideo[height<=720][vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[height<=720]+bestaudio/best[height<=720]",
+        "480p":  "bestvideo[height<=480][vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[height<=480]+bestaudio/best[height<=480]",
+        "360p":  "bestvideo[height<=360][vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[height<=360]+bestaudio/best[height<=360]",
     }
     fmt = format_map.get(quality, "best")
     start_str = format_ytdlp_time(start_sec)
@@ -118,6 +118,7 @@ def download_with_ytdlp(
         "--merge-output-format", "mp4",
         "-o", out_path,
         "--compat-options", "no-direct-merge",
+        "--postprocessor-args", "ffmpeg:-avoid_negative_ts make_zero",
         "--retries", "10",
         "--fragment-retries", "10",
         "--newline",
