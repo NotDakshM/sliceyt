@@ -91,3 +91,35 @@ As of latest checkpoint, the following is fully working:
 - Clean sans-serif font (Inter or system-ui)
 - Subtle animated background
 - Progress bar custom styled — not default browser element
+
+## Railway Deployment Configuration — DO NOT CHANGE THESE
+
+### Working Setup (as of latest checkpoint)
+- yt-dlp installed via requirements.txt as Python package
+- ffmpeg installed via RAILPACK_DEPLOY_APT_PACKAGES=ffmpeg environment variable in Railway
+- deno installed via railpack.json packages
+- Cookies passed via COOKIES_CONTENT environment variable in Railway
+- Gunicorn timeout set to 300 seconds in Procfile to handle long downloads
+
+### Procfile
+web: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 300 --workers 2 --worker-class gthread --threads 4
+
+### railpack.json
+deno: latest (for YouTube JS challenge solving)
+
+### Railway Environment Variables Required
+- COOKIES_CONTENT: YouTube cookies in Netscape format
+- RAILPACK_DEPLOY_APT_PACKAGES: ffmpeg
+- PORT: set automatically by Railway
+
+### yt-dlp command flags that work on Railway
+- --remote-components ejs:github
+- --js-runtimes deno
+- --cookies /tmp/cookies.txt (written from COOKIES_CONTENT env var at startup)
+
+### DO NOT
+- Change the Procfile timeout below 300
+- Remove --remote-components or --js-runtimes flags
+- Hardcode any ports
+- Remove the COOKIES_CONTENT startup block
+- Remove the disk cleanup thread
