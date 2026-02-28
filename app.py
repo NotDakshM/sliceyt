@@ -1204,7 +1204,8 @@ def api_download():
     with _jobs_lock:
         _jobs[job_id] = {"status": "pending", "file": None, "msg": "", "queue": q}
 
-    out_name = f"clip_{video_id}_{start_sec}-{end_sec}.mp4"
+    unique_id = uuid.uuid4().hex[:8]
+    out_name = f"clip_{video_id}_{start_sec}-{end_sec}_{unique_id}.mp4"
     out_path = os.path.join(DOWNLOAD_DIR, out_name)
 
     def run():
