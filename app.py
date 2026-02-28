@@ -187,6 +187,20 @@ _jobs_lock = threading.Lock()
 DOWNLOAD_DIR = os.path.join(tempfile.gettempdir(), "yt_clip_downloads")
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
+import time
+def cleanup_old_files():
+    while True:
+        time.sleep(600)
+        now = time.time()
+        for f in Path(DOWNLOAD_DIR).glob('*.mp4'):
+            if now - f.stat().st_mtime > 1800:
+                try:
+                    f.unlink()
+                except:
+                    pass
+
+threading.Thread(target=cleanup_old_files, daemon=True).start()
+
 # ── HTML page ──────────────────────────────────────────────────────────────────
 
 def _build_html() -> str:
@@ -1116,5 +1130,6 @@ def api_file(job_id: str):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000, threaded=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, threaded=True, debug=False)
 
