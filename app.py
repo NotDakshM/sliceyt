@@ -752,7 +752,7 @@ def _build_html() -> str:
   <div class="brand" style="display:flex;align-items:center;gap:10px;justify-content:center;">
     <img src="/logo" alt="" style="height:32px;">SliceYT
   </div>
-  <h1 class="headline">Grab any moment<br>from <em>YouTube.</em></h1>
+  <h1 class="headline">Grab any <span id="cycle-word" style="color:var(--red)">clip</span><br>from <em>YouTube.</em></h1>
   <p class="sub">Paste a link. Set your timestamps.<br>Download the exact clip you want.</p>
   <div class="url-bar">
     <input id="url" type="text" placeholder="https://youtube.com/watch?v=\u2026" onkeydown="if(event.key==='Enter') fetchInfo()">
@@ -1158,6 +1158,24 @@ function resetUI() {
   document.getElementById('dl-btn').disabled = false;
   hide('progress-area');
 }
+(function() {
+  var words = ['clip', 'moment', 'part', 'section'];
+  var el = document.getElementById('cycle-word');
+  var idx = 0;
+  function hold() { setTimeout(erase, 2000); }
+  function erase() {
+    var t = el.textContent;
+    if (t.length > 0) { el.textContent = t.slice(0, -1); setTimeout(erase, 80); }
+    else { idx = (idx + 1) % words.length; type(); }
+  }
+  function type() {
+    var word = words[idx];
+    var t = el.textContent;
+    if (t.length < word.length) { el.textContent = word.slice(0, t.length + 1); setTimeout(type, 100); }
+    else { hold(); }
+  }
+  hold();
+})();
 </script>
 </body>
 </html>"""
