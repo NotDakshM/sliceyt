@@ -173,7 +173,11 @@ def download_with_ytdlp(
             '-movflags', '+faststart',
             fixed_path
         ]
+        print(f"DEBUG: Running ffmpeg re-encode on {out_path}")
         result = subprocess.run(ffmpeg_cmd, capture_output=True)
+        print(f"DEBUG: ffmpeg re-encode returncode: {result.returncode}")
+        if result.returncode != 0:
+            print(f"DEBUG: ffmpeg stderr: {result.stderr.decode()}")
         if result.returncode == 0:
             os.replace(fixed_path, out_path)
 
